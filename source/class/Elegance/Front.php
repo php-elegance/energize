@@ -68,7 +68,7 @@ abstract class Front
         if (!is_stringable($content))
             return $content;
 
-        if (Request::header('Elegance-Request')) {
+        if (Request::header('Front-Request')) {
             Response::type('json');
             Response::status(STS_OK);
             Response::content([

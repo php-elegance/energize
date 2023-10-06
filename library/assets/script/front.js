@@ -25,23 +25,23 @@ const front = {
         solve: (action) => new Promise(async (resolve, reject) => {
             if (!front.core.WORKING) {
                 front.core.WORKING = true;
-                document.body.classList.add('__working');
+                document.body.classList.add('front-working');
                 let resp = await action();
                 front.core.WORKING = false
-                document.body.classList.remove('__working');
+                document.body.classList.remove('front-working');
                 return resolve(resp)
             }
             return reject('awaiting');
         }),
         update: {
             content(content) {
-                let el = document.getElementById('__content')
+                let el = document.getElementById('front-content')
                 el.innerHTML = content;
                 el.querySelectorAll("script").forEach((tag) => eval(tag.innerHTML));
                 front.core.run();
             },
             layout(content, hash) {
-                let el = document.getElementById('__layout')
+                let el = document.getElementById('front-layout')
                 el.innerHTML = content;
                 el.dataset.hash = hash;
                 el.querySelectorAll("script").forEach((tag) => eval(tag.innerHTML));
@@ -77,11 +77,11 @@ const front = {
         if ((new URL(url)).hostname != front.core.BASE_HOST)
             return await front.redirect(url);
 
-        let hash = document.getElementById('__layout').dataset.hash;
+        let hash = document.getElementById('front-layout').dataset.hash;
 
         let resp = await front.request('get', url, {}, { 'Front-Hash': hash });
 
-        if (!resp.info.front)
+        if (!resp.info.elegance)
             return await front.redirect(url);
 
         if (resp.info.error)
@@ -133,9 +133,9 @@ const front = {
                     return resolve(await front.go(xhr.getResponseHeader("Front-Location"), true));
                 }
 
-                if (!resp.info.front) resp = {
+                if (!resp.info.elegance) resp = {
                     info: {
-                        front: false,
+                        elegance: false,
                         error: xhr.status > 399,
                         staus: xhr.status
                     },

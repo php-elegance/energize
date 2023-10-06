@@ -29,9 +29,9 @@ return function ($next) {
                 $url = url($url, ['info' => Cif::on($info, 'E')]);
             }
 
-            if (Request::header('Elegance-Request')) {
+            if (Request::header('Front-Request')) {
                 Response::cache(false);
-                Response::header('Elegance-Location', $url);
+                Response::header('Front-Location', $url);
                 throw new Exception('', STS_OK);
             }
             redirect($url);
