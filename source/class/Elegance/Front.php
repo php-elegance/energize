@@ -9,7 +9,7 @@ abstract class Front
 {
     protected static array $head = [
         'title' => 'Elegance',
-        'favicon' => '/favicon.ico',
+        'favicon' => '/assets/favicon.ico',
         'description' => '',
     ];
     protected static array $aside = [];
