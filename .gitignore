@@ -1,0 +1,10 @@
+/vendor
+/composer.lock
+
+/mx
+/.env
+/index.php
+
+/app/*
+/routes/*
+/view/*
