@@ -14,8 +14,8 @@ return function ($next) {
 
         if ($e->getCode() == STS_REDIRECT) {
             $url = $e->getMessage();
-        } elseif (IS_GET && env('ERROR_PAGE')) {
-            $url = url(env('ERROR_PAGE'), ['error' => $e->getCode()]);
+        } elseif (IS_GET && env('FRONT_ERROR_PAGE')) {
+            $url = url(env('FRONT_ERROR_PAGE'), ['error' => $e->getCode()]);
         } else {
             $url = false;
         }
