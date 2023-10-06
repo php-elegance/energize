@@ -12,10 +12,13 @@
         "psr-4": {
             "": "source/class/"
         },
-        "files": []
+        "files": [
+            "source/helper/script/path.php",
+            "source/helper/script/view.php"
+        ]
     },
     "require": {
         "elegance/server": "^0.1.1",
-        "elegance/view-scss": "^0.1.0"
+        "elegance/view-scss": "*"
     }
 }

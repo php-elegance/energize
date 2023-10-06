@@ -83,6 +83,7 @@ abstract class Front
         }
 
         $content = self::renderToHtml($content);
+
         Response::type('html');
         Response::status(STS_OK);
         Response::content($content);
@@ -120,7 +121,7 @@ abstract class Front
     /** Renderiza o Layout da respsta */
     protected static function renderLayout($content)
     {
-        $content = "<div id='__content'>\n$content\n</div>";
+        $content = "<div id='front-content'>\n$content\n</div>";
 
         $aside = [];
         foreach (self::$aside as $name => $asideContent)
@@ -143,9 +144,9 @@ abstract class Front
     protected static function renderPage($content)
     {
         $hash = self::getLayoutHash();
-        $content = "<div id='__layout' data-hash='$hash'>\n$content\n</div>";
+        $content = "<div id='front-layout' data-hash='$hash'>\n$content\n</div>";
 
-        $page = View::renderFile("@html.php", ['head' => self::$head]);
+        $page = View::renderFile("@base.php", ['head' => self::$head]);
         $page = ViewRenderHtml::organizeHtml($page);
         $page = str_replace('[#content]', $content, $page);
 
