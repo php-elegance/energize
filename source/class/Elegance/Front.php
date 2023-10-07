@@ -101,7 +101,7 @@ abstract class Front
             'content' => ViewRenderHtml::organizeHtml($content)
         ];
 
-        if (Request::header('Elegance-Hash') != $hash)
+        if (Request::header('Front-Hash') != $hash)
             $response['content'] = self::renderLayout($response['content']);
 
         return $response;
