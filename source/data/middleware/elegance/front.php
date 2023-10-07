@@ -24,7 +24,7 @@ return function ($next) {
             if ($e->getCode() != STS_REDIRECT) {
                 $info = [
                     'code' => $e->getCode(),
-                    'url' => url(true)
+                    'url' => url()
                 ];
                 $url = url($url, ['info' => Cif::on($info, 'E')]);
             }
