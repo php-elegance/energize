@@ -11,7 +11,6 @@ return function ($next) {
     try {
         return Front::solve($next());
     } catch (Exception | Error $e) {
-
         if ($e->getCode() == STS_REDIRECT) {
             $url = $e->getMessage();
         } elseif (IS_GET && env('FRONT_ERROR_PAGE')) {
@@ -24,7 +23,7 @@ return function ($next) {
             if ($e->getCode() != STS_REDIRECT) {
                 $info = [
                     'code' => $e->getCode(),
-                    'url' => url()
+                    'url' => url('.')
                 ];
                 $url = url($url, ['info' => Cif::on($info, 'E')]);
             }
