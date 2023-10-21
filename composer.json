@@ -18,7 +18,6 @@
         ]
     },
     "require": {
-        "elegance/server": "dev-main"
-    },
-    "minimum-stability": "dev"
+        "elegance/server": "^1.1"
+    }
 }
