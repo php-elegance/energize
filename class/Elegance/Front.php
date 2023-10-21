@@ -129,7 +129,7 @@ abstract class Front
 
         $layout = self::$layoutView;
 
-        $layout = View::renderFile("@layout/$layout.php", [
+        $layout = View::renderFile("front/layout/$layout.php", [
             'head' => self::$head,
             'aside' => $aside
         ]);
@@ -146,7 +146,7 @@ abstract class Front
         $hash = self::getLayoutHash();
         $content = "<div id='front-layout' data-hash='$hash'>\n$content\n</div>";
 
-        $page = View::renderFile("@base.php", ['head' => self::$head]);
+        $page = View::renderFile("front/base.php", ['head' => self::$head]);
         $page = ViewRenderHtml::organizeHtml($page);
         $page = str_replace('[#content]', $content, $page);
 

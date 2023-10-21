@@ -10,15 +10,15 @@
     ],
     "autoload": {
         "psr-4": {
-            "": "source/class/"
+            "": "class/"
         },
         "files": [
-            "source/helper/script/path.php",
-            "source/helper/script/view.php"
+            "helper/script/path.php",
+            "helper/script/view.php"
         ]
     },
     "require": {
-        "elegance/server": "^1.0",
-        "elegance/view-scss": "^1.0"
-    }
+        "elegance/server": "dev-main"
+    },
+    "minimum-stability": "dev"
 }
