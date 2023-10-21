@@ -101,9 +101,6 @@ const front = {
 
         return;
     }),
-    submit: (method, url = null, data = {}) => new Promise(async (resolve, reject) => {
-        return resolve(await front.request(method, url, data))
-    }),
     request: (method, url = null, data = {}, header = {}) => front.core.solve(() =>
         new Promise((resolve, reject) => {
             var xhr = new XMLHttpRequest();
@@ -111,18 +108,10 @@ const front = {
             url = url ?? window.location.href
 
             xhr.open(method, url, true);
-
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.setRequestHeader("Front-Request", method);
 
             for (let key in header)
                 xhr.setRequestHeader(key, header[key]);
-
-            if (data instanceof FormData)
-                data = Object.fromEntries(data);
-
-            data = JSON.stringify({ ...data });
-
             xhr.responseType = "json";
 
             xhr.onload = async () => {
@@ -169,29 +158,64 @@ front.core.register("form[front]", (el) => {
 
         if (showmessage) showmessage.innerHTML = "";
 
-        let resp = await front.submit(
+        let data = new FormData(el);
+
+        el.querySelectorAll('input[type=file]').forEach(input => {
+            for (var i = 0; i < input.files.length; i++) {
+                data.append(input.getAttribute('name') + "[]", input.files[i]);
+            }
+        });
+
+        let hash = document.getElementById('front-layout').dataset.hash;
+
+        let resp = await front.request(
             el.getAttribute("method") ?? "post",
             el.action,
-            new FormData(el)
+            data,
+            { 'Front-Hash': hash }
         );
 
-        let action = el.getAttribute(resp.info.error ? "onerror" : "onsuccess");
+        if (resp.data) {
+            front.core.update.head(resp.data.head);
 
-        if (action) action = eval(action);
+            if (resp.data.hash == hash) {
+                front.core.update.content(resp.data.content)
+            } else {
+                front.core.update.layout(resp.data.content, resp.data.hash)
+            }
 
-        if (action instanceof Function) return action(resp);
+            window.scrollTo(0, 0);
 
-        if (showmessage) {
+        } else {
 
-            let spanClass = `sts_` + (resp.info.error ? "erro" : "success");
-            let message = resp.info.message ?? (resp.info.error ? "erro" : "ok");
-            let description = resp.info.description ?? "";
+            let action = el.getAttribute(resp.info.error ? "onerror" : "onsuccess");
 
-            showmessage.innerHTML =
-                `<span class='sts_${resp.info.status} ${spanClass}'>` +
-                `<span>${message}</span>` +
-                `<span>${description}</span>` +
-                `</span>`;
+            if (action) action = eval(action);
+
+            if (action instanceof Function) return action(resp);
+
+            el.querySelectorAll('[data-input].error').forEach(label => {
+                label.classList.remove('error')
+            })
+
+            if (resp.info.error)
+                if (resp.info.field) {
+                    let label = el.querySelector(`[data-input=${resp.info.field}]`)
+                    if (label)
+                        label.classList.add('error')
+                }
+
+            if (showmessage) {
+                let spanClass = `sts_` + (resp.info.error ? "erro" : "success");
+                let message = resp.info.message ?? (resp.info.error ? "erro" : "ok");
+                let description = resp.info.description ?? "";
+
+                showmessage.innerHTML =
+                    `<span class='sts_${resp.info.status} ${spanClass}'>` +
+                    `<span>${message}</span>` +
+                    `<span>${description}</span>` +
+                    `</span>`;
+            }
         }
     });
 });
