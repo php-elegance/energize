@@ -2,4 +2,4 @@
 
 use Elegance\Path;
 
-Path::alias('elegance-front', dirname(__DIR__, 3));
+Path::alias('elegance-front', dirname(__DIR__, 2));
