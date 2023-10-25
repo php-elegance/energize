@@ -6,6 +6,8 @@
 /index.php
 
 /app
-/source/routes
+/source/routes/*
 /view/*
+
+!/source/routes/front.php
 !/view/front
