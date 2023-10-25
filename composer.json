@@ -13,11 +13,11 @@
             "": "class/"
         },
         "files": [
-            "helper/script/path.php",
-            "helper/script/view.php"
+            "source/helper/script/path.php",
+            "source/helper/script/view.php"
         ]
     },
     "require": {
-        "elegance/server": "^1.1"
+        "elegance/server": "^1.2"
     }
 }
