@@ -2,7 +2,7 @@
 
 namespace Elegance;
 
-use Elegance\ViewRender\ViewRenderHtml;
+use Elegance\ViewRender\ViewRenderJs;
 use Exception;
 
 abstract class Front
@@ -98,7 +98,7 @@ abstract class Front
         $response = [
             'head' => self::$head,
             'hash' => $hash,
-            'content' => ViewRenderHtml::organizeHtml($content)
+            'content' => self::organizeHtml($content)
         ];
 
         if (Request::header('Front-Hash') != $hash)
@@ -110,7 +110,7 @@ abstract class Front
     /** Renderia um conteúdo dentro de uma estrutura de resposta completa */
     protected static function renderToHtml($content)
     {
-        $content = ViewRenderHtml::organizeHtml($content);
+        $content = self::organizeHtml($content);
 
         $content = self::renderLayout($content);
         $content = self::renderPage($content);
@@ -125,7 +125,7 @@ abstract class Front
 
         $aside = [];
         foreach (self::$aside as $name => $asideContent)
-            $aside[$name] = ViewRenderHtml::organizeHtml($asideContent);
+            $aside[$name] = self::organizeHtml($asideContent);
 
         $layout = self::$layoutView;
 
@@ -134,7 +134,7 @@ abstract class Front
             'aside' => $aside
         ]);
 
-        $layout = ViewRenderHtml::organizeHtml($layout);
+        $layout = self::organizeHtml($layout);
 
         $layout = str_replace('[#content]', $content, $layout);
 
@@ -147,7 +147,7 @@ abstract class Front
         $content = "<div id='front-layout' data-hash='$hash'>\n$content\n</div>";
 
         $page = View::renderFile("front/base.php", ['head' => self::$head]);
-        $page = ViewRenderHtml::organizeHtml($page);
+        $page = self::organizeHtml($page);
         $page = str_replace('[#content]', $content, $page);
 
         return $page;
@@ -161,5 +161,110 @@ abstract class Front
             self::$layoutGroup,
         ]);
         return Code::on([$key, self::$aside]);
+    }
+
+
+
+    /** Retorna uma string HTML organizando as tags style e script */
+    static function organizeHtml(string $string): string
+    {
+        preg_match('/<html[^>]*>(.*?)<\/html>/s', $string, $html);
+
+        $string = count($html) ? self::organizeComplete($string) : self::organizePartial($string);
+
+        $string = str_replace_all(["\n\n", "\n ", "  ", "\r"], ["\n", "\n", ' ', ' '], trim($string));
+
+        return $string;
+    }
+
+    /** Aplica a organização em uma estrutura HTML parcial */
+    protected static function organizePartial(string $string): string
+    {
+        $src = [];
+        $script = [];
+        preg_match_all('/<script[^>]*>(.*?)<\/script>/s', $string, $tag);
+        $string = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $string);
+        foreach ($tag[1] as $key => $value)
+            if (empty(trim($value)))
+                $src[] = $tag[0][$key];
+            else
+                $script[] = $value;
+
+        $src = implode("\n", $src ?? []);
+        $script = implode("\n", $script ?? []);
+
+        if (!empty($script)) {
+            $script = ViewRenderJs::minify($script);
+            if (!empty($script))
+                $script = "<script>\n$script\n</script>";
+        }
+
+        preg_match_all('/<style[^>]*>(.*?)<\/style>/s', $string, $tag);
+        $string = preg_replace('#<style(.*?)>(.*?)</style>#is', '', $string);
+        $style = $tag[1];
+
+        $style = implode("\n", $style ?? []);
+
+        if (!empty($style)) {
+            $style = Scss::compile($style);
+            if (!empty($style))
+                $style = "<style>$style</style>";
+        }
+
+        $string = [$src, $style, $string, $script];
+        $string = implode("\n", $string);
+
+        return $string;
+    }
+
+    /** Aplica a organização em uma estrutura HTML completa*/
+    protected static function organizeComplete(string $string): string
+    {
+        $src = [];
+        $script = [];
+        preg_match_all('/<script[^>]*>(.*?)<\/script>/s', $string, $tag);
+        $string = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $string);
+        foreach ($tag[1] as $key => $value)
+            if (empty(trim($value)))
+                $src[] = $tag[0][$key];
+            else
+                $script[] = $value;
+
+        $src = implode("\n", $src ?? []);
+        $script = implode("\n", $script ?? []);
+
+        if (!empty($script)) {
+            $script = ViewRenderJs::minify($script);
+            if (!empty($script))
+                $script = "<script>\n$script\n</script>";
+        }
+
+        preg_match_all('/<style[^>]*>(.*?)<\/style>/s', $string, $tag);
+        $string = preg_replace('#<style(.*?)>(.*?)</style>#is', '', $string);
+        $style = $tag[1];
+
+        $style = implode("\n", $style ?? []);
+
+        if (!empty($style)) {
+            $style = Scss::compile($style);
+            if (!empty($style))
+                $style = "<style>\n$style\n</style>";
+        }
+
+        preg_match_all('/<head[^>]*>(.*?)<\/head>/s', $string, $tag);
+        $string = str_replace($tag[0], '[#head]', $string);
+        $string = preg_replace('#<head(.*?)>(.*?)</head>#is', '', $string);
+        $head = $tag[1];
+
+        $head[] = $style;
+        $head[] = $src;
+        $head[] = $script;
+
+        $head = implode("\n", $head);
+        $head = "<head>\n$head\n</head>";
+
+        $string = prepare($string, ['head' => $head]);
+
+        return $string;
     }
 }
