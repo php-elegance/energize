@@ -4,6 +4,7 @@ namespace Elegance\ViewRender;
 
 use Elegance\Dir;
 use Elegance\File;
+use Elegance\Scss;
 
 abstract class ViewRenderVue extends ViewRender
 {
@@ -78,7 +79,7 @@ abstract class ViewRenderVue extends ViewRender
                 $script = "<script>\n(function(){\n$script\n})()\n</script>";
 
             $style = implode("\n", self::$style);
-            $style = ViewRenderScss::minify($style);
+            $style = Scss::compile($style);
             if (!empty($style))
                 $style = "<style>\n$style\n</style>";
 
