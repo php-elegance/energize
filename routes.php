@@ -12,8 +12,6 @@ Router::add([], [
             Response::content(Scss::compile(Response::getContent()));
         Response::send();
     },
-    'page1' => 'page1',
-    'page2' => 'page2',
-    'page3' => 'page3',
-    '' => '>page1'
+    'favicon.ico' => fn () => Assets::send('public/favicon.ico'),
+    '' => '# 🐘'
 ]);
