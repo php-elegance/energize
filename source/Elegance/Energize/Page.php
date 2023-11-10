@@ -63,7 +63,7 @@ abstract class Page
         if (is_httpStatus($content))
             throw new Exception('', $content);
 
-        if (Request::header('Energize-Request'))
+        if (IS_ENERGIZE)
             return self::renderizeFragment($content);
 
         return self::renderizePage($content);
@@ -85,7 +85,7 @@ abstract class Page
 
         $content = self::organizeHtml($content);
 
-        if (Request::header('Energize-Hash') != $hash)
+        if (!IS_FRAGMENT && Request::header('Energize-Hash') != $hash)
             $content = self::renderTemplate($content);
 
         return [

@@ -13,6 +13,7 @@
             "": "source/"
         },
         "files": [
+            "helper/constant/request_is.php",
             "helper/script/path.php",
             "helper/script/view.php"
         ]

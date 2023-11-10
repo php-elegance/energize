@@ -1,11 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
     window.onpopstate = () => location.reload();
     console.log("⚡");
+    document.body.querySelectorAll("script:not([energized])")
+        .forEach((tag) => {
+            tag.setAttribute('energized', '');
+        });
     energize.core.run();
 });
 
+const page = {};
+
 const energize = {
-    action: {},
     core: {
         URL_VUE_JS: "/assets/script/third/vue.js",
         BASE_HOST: (new URL(window.location)).hostname,
@@ -18,91 +23,72 @@ const energize = {
                     el.setAttribute('energized', '');
                 })
             );
+            document.body.querySelectorAll("script:not([energized])").forEach((tag) => {
+                eval(tag.innerHTML)
+                tag.setAttribute('energized', '');
+            });
         },
         register(querySelector, action) {
             energize.core.REGISTRED[querySelector] = action
         },
-        solve: (action) => new Promise(async (resolve, reject) => {
-            if (!energize.core.WORKING) {
-                energize.core.WORKING = true;
-                document.body.classList.add('energize-working');
-                let resp = await action();
-                energize.core.WORKING = false
-                document.body.classList.remove('energize-working');
-                return resolve(resp)
-            }
-            return reject('awaiting');
-        }),
         update: {
-            content(content) {
+            content: (content) => {
                 let el = document.getElementById('energize-content')
                 el.innerHTML = content;
-                el.querySelectorAll("script").forEach((tag) => eval(tag.innerHTML));
                 energize.core.run();
             },
-            template(content, hash) {
+            template: (content, hash) => {
                 let el = document.getElementById('energize-template')
                 el.innerHTML = content;
                 el.dataset.hash = hash;
-                el.querySelectorAll("script").forEach((tag) => eval(tag.innerHTML));
                 energize.core.run();
             },
-            location(url) {
+            location: (url) => {
                 if (url != window.location)
                     history.pushState({ urlPath: url }, null, url);
             },
-            head(head) {
+            head: (head) => {
                 document.title = head.title;
                 document.head.querySelector('meta[name="description"]').setAttribute("content", head.description);
                 document.head.querySelector('link[rel="icon"]').setAttribute("href", head.favicon);
-            }
+            },
+            fragment: (e, content, mode) => {
+                if (mode) {
+                    mode = mode == 1 ? 'beforeend' : 'afterbegin';
+                    e.insertAdjacentHTML(mode, content)
+                } else {
+                    e.innerHTML = content
+                }
+                energize.core.run();
+            },
         },
         load: {
-            script(src, callOnLoad = () => { }) {
-                if (document.head.querySelectorAll(`script[src="${src}"]`).length > 0) return callOnLoad();
+            script(src, call) {
+                call = call ?? function () { };
+
+                if (document.head.querySelectorAll(`script[src = "${src}"]`).length > 0)
+                    return call();
+
                 let script = document.createElement("script");
                 script.async = "true";
                 script.src = src;
-                script.onload = () => callOnLoad();
+                script.onload = () => call();
                 document.head.appendChild(script);
             },
             vue(component, inId) {
                 energize.core.load.script(energize.core.URL_VUE_JS, () => Vue.createApp(component).mount(inId));
             },
-        },
-    },
-    go: (url, force = false) => new Promise(async (resolve, reject) => {
-        if (!force && url == window.location) return;
-
-        if ((new URL(url)).hostname != energize.core.BASE_HOST)
-            return await energize.redirect(url);
-
-        let hash = document.getElementById('energize-template').dataset.hash;
-
-        let resp = await energize.request('get', url, {}, { 'Energize-Hash': hash });
-
-        if (!resp.info.elegance)
-            return await energize.redirect(url);
-
-        if (resp.info.error)
-            return;
-
-        energize.core.update.head(resp.data.head);
-
-        energize.core.update.location(url);
-
-        if (resp.data.hash == hash) {
-            energize.core.update.content(resp.data.content)
-        } else {
-            energize.core.update.template(resp.data.content, resp.data.hash)
         }
+    },
+    request(url = null, method = 'get', data = {}, header = {}) {
+        return new Promise(function (resolve, reject) {
 
-        window.scrollTo(0, 0);
+            if (energize.core.WORKING)
+                return reject('working');
 
-        return;
-    }),
-    request: (method, url = null, data = {}, header = {}) => energize.core.solve(() =>
-        new Promise((resolve, reject) => {
+            energize.core.WORKING = true;
+            document.body.classList.add('energize-working');
+
             var xhr = new XMLHttpRequest();
 
             url = url ?? window.location.href
@@ -112,17 +98,21 @@ const energize = {
 
             for (let key in header)
                 xhr.setRequestHeader(key, header[key]);
+
             xhr.responseType = "json";
 
-            xhr.onload = async () => {
+            xhr.onload = () => {
+                energize.core.WORKING = false;
+                document.body.classList.remove('energize-working');
+
                 let resp = xhr.response;
 
                 if (xhr.getResponseHeader("Energize-Location")) {
-                    energize.core.WORKING = false;
-                    return resolve(await energize.go(xhr.getResponseHeader("Energize-Location"), true));
+                    energize.go(xhr.getResponseHeader("Energize-Location"), true);
+                    return reject('redirect');
                 }
 
-                if (!resp.info.elegance) resp = {
+                if (!resp.info || !resp.info.elegance) resp = {
                     info: {
                         elegance: false,
                         error: xhr.status > 399,
@@ -131,23 +121,61 @@ const energize = {
                     data: resp,
                 };
 
-                return resolve(resp);
+                return resolve(resp)
             };
 
             xhr.send(data);
         })
-    ),
-    redirect: (url) => new Promise((resolve, reject) => {
+    },
+    go(url, force = false) {
+        if (!force && url == window.location)
+            return;
+
+        if ((new URL(url)).hostname != energize.core.BASE_HOST)
+            return energize.redirect(url);
+
+        let hash = document.getElementById('energize-template').dataset.hash;
+
+        energize.request(url, 'get', {}, { 'Energize-Hash': hash })
+            .then((resp) => {
+                if (!resp.info.elegance)
+                    return energize.redirect(url);
+
+                if (resp.info.error)
+                    return;
+
+                energize.core.update.head(resp.data.head);
+
+                energize.core.update.location(url);
+
+                if (resp.data.hash == hash)
+                    energize.core.update.content(resp.data.content)
+                else
+                    energize.core.update.template(resp.data.content, resp.data.hash)
+
+                window.scrollTo(0, 0);
+                return;
+            }).catch(() => null)
+    },
+    redirect(url) {
         window.location.href = url;
         return resolve('ok');
-    }),
+    },
+    fragment(url, target, mode) {
+        energize.request(url, 'get', {}, { 'Energize-Fragment': true })
+            .then((resp) => {
+                energize.core.update.fragment(target, resp.data.content, mode)
+            })
+            .catch(() => null)
+    }
 };
 
-energize.core.register("[href]:not([energized])", (el) => {
+energize.core.register("[href]:not([href='']:not([energized])", (el) => {
     el.addEventListener("click", (ev) => {
         ev.preventDefault();
-        energize.go(new URL(el.href ?? el.getAttribute('href'), document.baseURI).href);
-    });
+        let url = new URL(el.href ?? el.getAttribute('href'), document.baseURI).href;
+        energize.go(url, document.baseURI)
+    })
 });
 
 energize.core.register("form:not([energized])", (el) => {
@@ -158,6 +186,10 @@ energize.core.register("form:not([energized])", (el) => {
 
         if (showmessage) showmessage.innerHTML = "";
 
+        el.querySelectorAll('[data-input].error').forEach(label => {
+            label.classList.remove('error')
+        })
+
         let data = new FormData(el);
 
         el.querySelectorAll('input[type=file]').forEach(input => {
@@ -166,63 +198,67 @@ energize.core.register("form:not([energized])", (el) => {
             }
         });
 
-        let hash = document.getElementById('energize-template').dataset.hash;
-
-        let resp = await energize.request(
+        energize.request(
+            url,
             el.getAttribute("method") ?? "post",
-            el.action,
             data,
-            { 'Energize-Hash': hash }
-        );
+            { 'Energize-Hash': document.getElementById('energize-template').dataset.hash })
+            .then((resp) => {
+                if (resp.data) {
+                    energize.core.update.head(resp.data.head);
 
-        if (resp.data) {
-            energize.core.update.head(resp.data.head);
+                    energize.core.update.location(url);
 
-            if (resp.data.hash == hash) {
-                energize.core.update.content(resp.data.content)
-            } else {
-                energize.core.update.template(resp.data.content, resp.data.hash)
-            }
+                    if (resp.data.hash == hash)
+                        energize.core.update.content(resp.data.content)
+                    else
+                        energize.core.update.template(resp.data.content, resp.data.hash)
 
-            window.scrollTo(0, 0);
-
-        } else {
-
-            let action = el.getAttribute(resp.info.error ? "onerror" : "onsuccess");
-
-            if (action) action = eval(action);
-
-            if (action instanceof Function) return action(resp);
-
-            el.querySelectorAll('[data-input].error').forEach(label => {
-                label.classList.remove('error')
-            })
-
-            if (resp.info.error)
-                if (resp.info.field) {
-                    let label = el.querySelector(`[data-input=${resp.info.field}]`)
-                    if (label)
-                        label.classList.add('error')
+                    window.scrollTo(0, 0);
+                    return;
                 }
 
-            if (showmessage) {
-                let spanClass = `sts_` + (resp.info.error ? "erro" : "success");
-                let message = resp.info.message ?? (resp.info.error ? "erro" : "ok");
-                let description = resp.info.description ?? "";
+                if (resp.info.error && resp.info.field) {
+                    let label = el.querySelector(`[data-input=${resp.info.field}]`)
+                    if (label) label.classList.add('error')
+                }
 
-                showmessage.innerHTML =
-                    `<span class='sts_${resp.info.status} ${spanClass}'>` +
-                    `<span>${message}</span>` +
-                    `<span>${description}</span>` +
-                    `</span>`;
-            }
-        }
+                if (showmessage) {
+                    let spanClass = `sts_` + (resp.info.error ? "erro" : "success");
+                    let message = resp.info.message ?? (resp.info.error ? "erro" : "ok");
+                    showmessage.innerHTML = `<span class='${spanClass}'>${message}</span>`;
+                }
+            }).catch(() => null)
     });
 });
 
-energize.core.register('[href]:not([href=""])', (el) => {
-    if (el.href == window.location.href)
-        el.classList.add('energize-active-link');
-    else
-        el.classList.remove('energize-active-link')
+energize.core.register("div[data-fragment]:not([energized])", (el) => {
+    energize.fragment(
+        el.dataset.fragment,
+        el.dataset.target ? document.getElementById(el.dataset.target) : el,
+        el.dataset.mode
+    );
+})
+
+energize.core.register("[href][data-fragment][data-target]", (el) => {
+    el.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        energize.fragment(
+            el.dataset.fragment,
+            el.dataset.target ? document.getElementById(el.dataset.target) : el,
+            el.dataset.mode
+        );
+    });
+})
+
+energize.core.register("[href]:not([href=''])", (el) => {
+    let url = new URL(el.href ?? el.getAttribute('href'), document.baseURI).href;
+    if (url.startsWith(window.location.href)) {
+        el.classList.add('active-link')
+        if (url == window.location.href)
+            el.classList.add('current-link')
+    } else {
+        el.classList.remove('active-link')
+        el.classList.remove('current-link')
+    }
 })
