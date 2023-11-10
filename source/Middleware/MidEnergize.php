@@ -28,6 +28,12 @@ class MidEnergize extends MidJson
             if ($e->getCode() == STS_REDIRECT)
                 throw $e;
 
+            if (IS_ENERGIZE) {
+                parent::encapsCatch($e);
+                Response::type('json');
+                Response::send();
+            }
+
             throw new Exception(json_encode([
                 'Message' => $e->getMessage(),
                 'Code' => $e->getCode(),

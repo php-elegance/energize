@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     energize.core.run();
 });
 
-const page = {};
+const __page = {};
 
 const energize = {
     core: {
@@ -199,11 +199,17 @@ energize.core.register("form:not([energized])", (el) => {
         });
 
         energize.request(
-            url,
+            el.action,
             el.getAttribute("method") ?? "post",
             data,
             { 'Energize-Hash': document.getElementById('energize-template').dataset.hash })
             .then((resp) => {
+                if (resp.info.error && el.dataset.error)
+                    return eval(el.dataset.error)(resp)
+
+                if (!resp.info.error && el.dataset.success)
+                    return eval(el.dataset.success)(resp)
+
                 if (resp.data) {
                     energize.core.update.head(resp.data.head);
 
