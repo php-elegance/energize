@@ -1,6 +1,6 @@
 <?php
 
-namespace Elegance\ViewRender;
+namespace Elegance\Front\ViewRender;
 
 use Elegance\Dir;
 use Elegance\File;

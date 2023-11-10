@@ -1,8 +1,8 @@
 <?php
 
-namespace Elegance;
+namespace Elegance\Front;
 
-use Elegance\ViewRender\ViewRenderCss;
+use Elegance\Server\ViewRender\ViewRenderCss;
 use ScssPhp\ScssPhp\Compiler;
 use ScssPhp\ScssPhp\OutputStyle;
 

@@ -1,8 +1,12 @@
 <?php
 
-namespace Elegance;
+namespace Elegance\Front;
 
-use Elegance\ViewRender\ViewRenderJs;
+use Elegance\Core\Code;
+use Elegance\Server\Request;
+use Elegance\Server\Response;
+use Elegance\Server\View;
+use Elegance\Server\ViewRender\ViewRenderJs;
 use Exception;
 
 abstract class Front
@@ -129,7 +133,7 @@ abstract class Front
 
         $layout = self::$layoutView;
 
-        $layout = View::renderFile("front/layout/$layout.php", [
+        $layout = View::render("front/layout/$layout.php", [
             'head' => self::$head,
             'aside' => $aside
         ]);
@@ -146,7 +150,7 @@ abstract class Front
         $hash = self::getLayoutHash();
         $content = "<div id='front-layout' data-hash='$hash'>\n$content\n</div>";
 
-        $page = View::renderFile("front/base.php", ['head' => self::$head]);
+        $page = View::render("front/base.php", ['head' => self::$head]);
         $page = self::organizeHtml($page);
         $page = str_replace('[#content]', $content, $page);
 
