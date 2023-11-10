@@ -11,3 +11,6 @@
 
 !/source/routes/front.php
 !/view/front
+
+/routes.json
+/routes.php
