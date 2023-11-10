@@ -1,16 +1,16 @@
-# front
+# energize
 Frontend dinamico para projetos Elegance
 
-    composer require elegance/front
+    composer require elegance/energize
 
-> Para que uma rota utilize o front, adicione a middleware **elegance.front**
+> Para que uma rota utilize o energize, adicione a middleware **energize**
 
 ---
 
-### [Documentação](https://github.com/php-elegance/front/blob/main/.doc)
+### [Documentação](https://github.com/php-elegance/energize/blob/main/.doc)
 
-- [helper](https://github.com/php-elegance/front/blob/main/.doc/_helper.md)
+- [helper](https://github.com/php-elegance/energize/blob/main/.doc/_helper.md)
 
-- [front](https://github.com/php-elegance/front/blob/main/.doc/front.md)
-- [viewRenderScss](https://github.com/php-elegance/front/blob/main/.doc/viewRenderScss.md)
-- [viewRenderVue](https://github.com/php-elegance/front/blob/main/.doc/viewRenderVue.md)
+- [energize](https://github.com/php-elegance/energize/blob/main/.doc/energize.md)
+- [viewRenderScss](https://github.com/php-elegance/energize/blob/main/.doc/viewRenderScss.md)
+- [viewRenderVue](https://github.com/php-elegance/energize/blob/main/.doc/viewRenderVue.md)

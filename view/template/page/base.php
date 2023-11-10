@@ -1,6 +1,6 @@
 <?php
-$__DATA['front.styleVersion'] = md5(view('=library/assets/style/front.css'));
-$__DATA['front.scriptVersion'] = md5(view('=library/assets/script/front.js'));
+$__DATA['energize.styleVersion'] = md5(view('=library/assets/style/energize.css'));
+$__DATA['energize.scriptVersion'] = md5(view('=library/assets/script/energize.js'));
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -13,8 +13,8 @@ $__DATA['front.scriptVersion'] = md5(view('=library/assets/script/front.js'));
     <link rel="icon" type="image/x-icon" href="[#head.favicon]" />
     <title>[#head.title]</title>
 
-    <link rel="stylesheet" href="/assets/style/front.css?v=[#front.styleVersion]">
-    <script src="/assets/script/front.js?v=[#front.scriptVersion]"></script>
+    <link rel="stylesheet" href="/assets/style/energize.css?v=[#energize.styleVersion]">
+    <script src="/assets/script/energize.js?v=[#energize.scriptVersion]"></script>
 </head>
 
 <body>

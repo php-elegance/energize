@@ -13,13 +13,13 @@ return function () {
 
     File::copy('#elegance-server/public/favicon.ico', 'public/favicon.ico');
 
-    File::copy('#elegance-front/source/routers/front.php', 'source/routers/front.php');
+    File::copy('#elegance-energize/source/routers/front.php', 'source/routers/front.php');
 
-    File::copy('#elegance-front/routes.php', 'routes.php');
+    File::copy('#elegance-energize/routes.php', 'routes.php');
 
-    Dir::copy('#elegance-front/public', 'public');
+    Dir::copy('#elegance-energize/public', 'public');
 
-    Dir::copy('#elegance-front/view/front', 'view/front');
+    Dir::copy('#elegance-energize/view/front', 'view/front');
 
     Terminal::echo('Front instalado');
 };

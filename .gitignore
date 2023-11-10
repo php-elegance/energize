@@ -9,7 +9,6 @@
 /source/routes/*
 /view/*
 
-!/source/routes/front.php
 !/view/template
 
 /routes.json

@@ -1,9 +1,9 @@
 <?php
 
-namespace Elegance\Front\Controller;
+namespace Elegance\Energize\Controller;
 
 use Elegance\Core\File;
-use Elegance\Front\Scss;
+use Elegance\Energize\Scss;
 use Elegance\Server\Controller\Assets as ControllerAssets;
 use Elegance\Server\Response;
 use Elegance\Server\View;

@@ -3,7 +3,7 @@
 // middleware elegance.front
 
 use Elegance\Cif;
-use Elegance\Front;
+use Elegance\Energize;
 use Elegance\Request;
 use Elegance\Response;
 

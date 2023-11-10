@@ -6,7 +6,7 @@ Esta é uma extensão da classe [view](https://github.com/php-elegance/server/bl
 
 Sempre que uma aplicação VUEJS for carregada, ela aciona automaticamente o front. Todos o processo de carregamento do Vue e montagem da aplicação é feita forma automatizada.
 
-As views do tipo VUE são convertidas em objetos javascript e tags css. O conteúdo css e scss é unificado, compilado e minificado. O conteúdo do componente é convertido para que possa ser lido via [front](https://github.com/php-elegance/front/blob/main/.doc/front.md).
+As views do tipo VUE são convertidas em objetos javascript e tags css. O conteúdo css e scss é unificado, compilado e minificado. O conteúdo do componente é convertido para que possa ser lido via [front](https://github.com/php-elegance/energize/blob/main/.doc/front.md).
 
 Em geral, escreva o componente vue normalmente
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Elegance\Front;
+namespace Elegance\Energize;
 
 use Elegance\Server\ViewRender\ViewRenderCss;
 use ScssPhp\ScssPhp\Compiler;

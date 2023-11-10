@@ -1,10 +1,10 @@
 <?php
 
-namespace Elegance\Front\ViewRender;
+namespace Elegance\Energize\ViewRender;
 
 use Elegance\Core\Dir;
 use Elegance\Core\File;
-use Elegance\Front\Scss;
+use Elegance\Energize\Scss;
 use Elegance\Server\ViewRender\ViewRender;
 use Elegance\Server\ViewRender\ViewRenderJs;
 
@@ -73,7 +73,7 @@ abstract class ViewRenderVue extends ViewRender
 
             $divId = $name ?? $vue['key'];
 
-            self::$incorp[] = "front.core.load.vue($vue[key],'#$divId')";
+            self::$incorp[] = "energize.core.load.vue($vue[key],'#$divId')";
 
             $script = implode("\n", [...self::$script, ...self::$incorp]);
             $script = ViewRenderJs::minify($script);

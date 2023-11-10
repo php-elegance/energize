@@ -14,7 +14,7 @@ A classe View vai ignorar estilos ideinticos a outros estilos já inseridos na r
 ### Compilando SCSS
 
 Por padrão, a instalação do front adiciona uma rota para compilação de views retornadas pela classe [assets](https://github.com/php-elegance/server/blob/main/.doc/assets.md).
-A classe [front](https://github.com/php-elegance/front/blob/main/.doc/front.md) tambem compila o scss de forma automática.
+A classe [front](https://github.com/php-elegance/energize/blob/main/.doc/front.md) tambem compila o scss de forma automática.
 Se precisar compilar texto SCSS em CSS, utilize a classe **Scss**
 
     Scss::compile($style): string

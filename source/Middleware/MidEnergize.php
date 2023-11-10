@@ -4,8 +4,8 @@ namespace Middleware;
 
 use Closure;
 
-/** front */
-class MidFront
+/** energize */
+class MidEnergize
 {
     function __invoke(Closure $next)
     {

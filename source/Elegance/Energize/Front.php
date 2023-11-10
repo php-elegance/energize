@@ -1,6 +1,6 @@
 <?php
 
-namespace Elegance\Front;
+namespace Elegance\Energize;
 
 use Elegance\Core\Code;
 use Elegance\Server\Request;

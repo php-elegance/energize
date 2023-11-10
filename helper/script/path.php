@@ -2,4 +2,4 @@
 
 use Elegance\Core\Path;
 
-Path::alias('elegance-front', dirname(__DIR__, 2));
+Path::alias('elegance-energize', dirname(__DIR__, 2));
