@@ -1,0 +1,18 @@
+<?php
+
+use Elegance\Server\Router;
+
+Router::globalMiddleware(['cros', 'front']);
+
+Router::add([
+    'favicon.ico' => '=elegance.server.controller.assets:favicon',
+    'assets...' => '=elegance.front.controller.assets:auto',
+    '' => '#Bem vindo ao ELEGANCE FRONT',
+]);
+
+Router::prefix('#', '=elegance.server.controller.prefix:show');
+Router::prefix('>', '=elegance.server.controller.prefix:redirect');
+Router::prefix('>>', '=elegance.server.controller.prefix:redirectWithRequestParameters');
+
+Router::status(STS_REDIRECT, '=elegance.server.controller.status:redirect');
+Router::status('=elegance.server.controller.status:error');

@@ -10,7 +10,7 @@
 /view/*
 
 !/source/routes/front.php
-!/view/front
+!/view/template
 
 /routes.json
 /routes.php

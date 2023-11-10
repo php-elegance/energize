@@ -2,9 +2,11 @@
 
 namespace Elegance\Front\ViewRender;
 
-use Elegance\Dir;
-use Elegance\File;
-use Elegance\Scss;
+use Elegance\Core\Dir;
+use Elegance\Core\File;
+use Elegance\Front\Scss;
+use Elegance\Server\ViewRender\ViewRender;
+use Elegance\Server\ViewRender\ViewRenderJs;
 
 abstract class ViewRenderVue extends ViewRender
 {

@@ -1,6 +1,6 @@
 <?php
-$__DATA['front.styleVersion'] = md5(view('=public/style/front.css'));
-$__DATA['front.scriptVersion'] = md5(view('=public/script/front.js'));
+$__DATA['front.styleVersion'] = md5(view('=library/assets/style/front.css'));
+$__DATA['front.scriptVersion'] = md5(view('=library/assets/script/front.js'));
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
