@@ -19,8 +19,7 @@
         ]
     },
     "require": {
-        "elegance/server": "dev-main",
+        "elegance/server": "^2.0",
         "scssphp/scssphp": "^1.11"
-    },
-    "minimum-stability": "dev"
+    }
 }
