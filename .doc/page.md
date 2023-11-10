@@ -1,4 +1,4 @@
-# Front
+# Page
 
 Encapsula a resposta em uma página html integrada com front.js
 
@@ -30,21 +30,21 @@ Você pode alterar os dados da página sem precisar alerar o arquivo base.html. 
 
     [#head.name]
 
-### Alterar layouts
+### Alterar templates
 
-Você deve criar o layout na pasta **front/layout**. Um layout é uma view que será utilizada para encapsular o conteúdo
-Para alterar o layout de uma resposta, utilize o metodod **Front::layout('layoutName')**
+Você deve criar o template na pasta **view/template**. Um template é uma view que será utilizada para encapsular o conteúdo
+Para alterar o template de uma resposta, utilize o metodod **Front::template('templateName')**
 
-    Front::layout('default');
+    Front::template('default');
 
-### Grupos de layout
+### Estado de template
 
-Por padrão, layouts são estaticos e, a não ser que o arquivo mude, se mantem inalterados durante a navegação.
-Você pode desativar este comportamento com o metodo metodod **Front::layoutGroup('groupName')**
+Por padrão, templates são estaticos e, a não ser que o arquivo mude, se mantem inalterados durante a navegação.
+Você pode desativar este comportamento com o metodo metodod **Front::teplateState('groupName')**
 
-    Front::layoutGroup('groupName');
+    Front::teplateState('state');
 
-Uma requisições que utilizam grupos diferentes sempre terão o layout atualizado.
+Uma requisições que utilizam estados diferentes sempre terão o template atualizado.
 
 ### Conteúdo Aside
 
@@ -56,11 +56,11 @@ O conteúdo aside vai ser inserido dentro da tag prepade **[#aside.asideName]**.
 
 ### Funcionamento
 
-Sempre que uma resposta passar pela middleware **elegance.front** ela será tratada como uma página de frontend e vai respeitar a seguintes regras.
+Sempre que uma resposta passar pela middleware **energize** ela será tratada como uma página de frontend e vai respeitar a seguintes regras.
 
   - Sempre que uma página for acessada diretamente ela via ser entregue em HTML
   - Sempre que uma página for chamada dinamicamente, ela vai retornar um JSON com o conteúdo
-  - Sempre que uma página utiliar um layout diferente do layout atual, ela vai retornar um JSON com o layout e o conteúdo
+  - Sempre que uma página utiliar um template diferente do template atual, ela vai retornar um JSON com o template e o conteúdo
 
  > Essa implementação não precisa ser feita. tudo já está aplicado e instalado no arquivo front.js
 

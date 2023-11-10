@@ -4,7 +4,6 @@ namespace Middleware;
 
 use Closure;
 use Elegance\Energize\Page;
-use Elegance\Server\Request;
 use Elegance\Server\Response;
 use Error;
 use Exception;
@@ -17,7 +16,18 @@ class MidEnergize extends MidJson
         try {
             $content = $next();
             $content = Page::renderize($content);
+
+            if (is_array($content))
+                parent::encaps($content);
+            else
+                Response::content($content);
+
+            Response::send();
         } catch (Error | Exception $e) {
+
+            if ($e->getCode() == STS_REDIRECT)
+                throw $e;
+
             throw new Exception(json_encode([
                 'Message' => $e->getMessage(),
                 'Code' => $e->getCode(),
@@ -25,7 +35,5 @@ class MidEnergize extends MidJson
                 'Line' => $e->getLine(),
             ]), STS_TEAPOT);
         }
-        Response::content($content);
-        Response::send();
     }
 }

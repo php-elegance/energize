@@ -1,5 +1,5 @@
 # energize
-Frontend dinamico para projetos Elegance
+Camada de construção de frontend dinamico para projetos Elegance
 
     composer require elegance/energize
 

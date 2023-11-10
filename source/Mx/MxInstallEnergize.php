@@ -21,7 +21,7 @@ class MxInstallEnergize extends Mx
 
         Dir::copy('#elegance-energize/library/assets', 'library/assets');
 
-        // Dir::copy('#elegance-energize/view/front', 'view/front');
+        Dir::copy('#elegance-energize/view/template/page', 'view/template/page');
 
         self::echo('Energize instalado');
     }

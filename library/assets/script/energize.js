@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
     window.onpopstate = () => location.reload();
-    console.log("🐘");
-    front.core.run();
+    console.log("⚡");
+    energize.core.run();
 });
 
-const front = {
+const energize = {
     action: {},
     core: {
         URL_VUE_JS: "/assets/script/third/vue.js",
@@ -12,40 +12,40 @@ const front = {
         WORKING: false,
         REGISTRED: {},
         run() {
-            Object.keys(front.core.REGISTRED).forEach((querySelector) =>
+            Object.keys(energize.core.REGISTRED).forEach((querySelector) =>
                 document.body.querySelectorAll(querySelector).forEach((el) => {
-                    front.core.REGISTRED[querySelector](el);
-                    el.removeAttribute("front");
+                    energize.core.REGISTRED[querySelector](el);
+                    el.setAttribute('energized', '');
                 })
             );
         },
         register(querySelector, action) {
-            front.core.REGISTRED[querySelector] = action
+            energize.core.REGISTRED[querySelector] = action
         },
         solve: (action) => new Promise(async (resolve, reject) => {
-            if (!front.core.WORKING) {
-                front.core.WORKING = true;
-                document.body.classList.add('front-working');
+            if (!energize.core.WORKING) {
+                energize.core.WORKING = true;
+                document.body.classList.add('energize-working');
                 let resp = await action();
-                front.core.WORKING = false
-                document.body.classList.remove('front-working');
+                energize.core.WORKING = false
+                document.body.classList.remove('energize-working');
                 return resolve(resp)
             }
             return reject('awaiting');
         }),
         update: {
             content(content) {
-                let el = document.getElementById('front-content')
+                let el = document.getElementById('energize-content')
                 el.innerHTML = content;
                 el.querySelectorAll("script").forEach((tag) => eval(tag.innerHTML));
-                front.core.run();
+                energize.core.run();
             },
-            layout(content, hash) {
-                let el = document.getElementById('front-layout')
+            template(content, hash) {
+                let el = document.getElementById('energize-template')
                 el.innerHTML = content;
                 el.dataset.hash = hash;
                 el.querySelectorAll("script").forEach((tag) => eval(tag.innerHTML));
-                front.core.run();
+                energize.core.run();
             },
             location(url) {
                 if (url != window.location)
@@ -67,48 +67,48 @@ const front = {
                 document.head.appendChild(script);
             },
             vue(component, inId) {
-                front.core.load.script(front.core.URL_VUE_JS, () => Vue.createApp(component).mount(inId));
+                energize.core.load.script(energize.core.URL_VUE_JS, () => Vue.createApp(component).mount(inId));
             },
         },
     },
     go: (url, force = false) => new Promise(async (resolve, reject) => {
         if (!force && url == window.location) return;
 
-        if ((new URL(url)).hostname != front.core.BASE_HOST)
-            return await front.redirect(url);
+        if ((new URL(url)).hostname != energize.core.BASE_HOST)
+            return await energize.redirect(url);
 
-        let hash = document.getElementById('front-layout').dataset.hash;
+        let hash = document.getElementById('energize-template').dataset.hash;
 
-        let resp = await front.request('get', url, {}, { 'Front-Hash': hash });
+        let resp = await energize.request('get', url, {}, { 'Energize-Hash': hash });
 
         if (!resp.info.elegance)
-            return await front.redirect(url);
+            return await energize.redirect(url);
 
         if (resp.info.error)
             return;
 
-        front.core.update.head(resp.data.head);
+        energize.core.update.head(resp.data.head);
 
-        front.core.update.location(url);
+        energize.core.update.location(url);
 
         if (resp.data.hash == hash) {
-            front.core.update.content(resp.data.content)
+            energize.core.update.content(resp.data.content)
         } else {
-            front.core.update.layout(resp.data.content, resp.data.hash)
+            energize.core.update.template(resp.data.content, resp.data.hash)
         }
 
         window.scrollTo(0, 0);
 
         return;
     }),
-    request: (method, url = null, data = {}, header = {}) => front.core.solve(() =>
+    request: (method, url = null, data = {}, header = {}) => energize.core.solve(() =>
         new Promise((resolve, reject) => {
             var xhr = new XMLHttpRequest();
 
             url = url ?? window.location.href
 
             xhr.open(method, url, true);
-            xhr.setRequestHeader("Front-Request", method);
+            xhr.setRequestHeader("Energize-Request", method);
 
             for (let key in header)
                 xhr.setRequestHeader(key, header[key]);
@@ -117,9 +117,9 @@ const front = {
             xhr.onload = async () => {
                 let resp = xhr.response;
 
-                if (xhr.getResponseHeader("Front-Location")) {
-                    front.core.WORKING = false;
-                    return resolve(await front.go(xhr.getResponseHeader("Front-Location"), true));
+                if (xhr.getResponseHeader("Energize-Location")) {
+                    energize.core.WORKING = false;
+                    return resolve(await energize.go(xhr.getResponseHeader("Energize-Location"), true));
                 }
 
                 if (!resp.info.elegance) resp = {
@@ -143,14 +143,14 @@ const front = {
     }),
 };
 
-front.core.register("[href][front]", (el) => {
+energize.core.register("[href]:not([energized])", (el) => {
     el.addEventListener("click", (ev) => {
         ev.preventDefault();
-        front.go(new URL(el.href ?? el.getAttribute('href'), document.baseURI).href);
+        energize.go(new URL(el.href ?? el.getAttribute('href'), document.baseURI).href);
     });
 });
 
-front.core.register("form[front]", (el) => {
+energize.core.register("form:not([energized])", (el) => {
     el.addEventListener("submit", async (ev) => {
         ev.preventDefault();
 
@@ -166,22 +166,22 @@ front.core.register("form[front]", (el) => {
             }
         });
 
-        let hash = document.getElementById('front-layout').dataset.hash;
+        let hash = document.getElementById('energize-template').dataset.hash;
 
-        let resp = await front.request(
+        let resp = await energize.request(
             el.getAttribute("method") ?? "post",
             el.action,
             data,
-            { 'Front-Hash': hash }
+            { 'Energize-Hash': hash }
         );
 
         if (resp.data) {
-            front.core.update.head(resp.data.head);
+            energize.core.update.head(resp.data.head);
 
             if (resp.data.hash == hash) {
-                front.core.update.content(resp.data.content)
+                energize.core.update.content(resp.data.content)
             } else {
-                front.core.update.layout(resp.data.content, resp.data.hash)
+                energize.core.update.template(resp.data.content, resp.data.hash)
             }
 
             window.scrollTo(0, 0);
@@ -220,9 +220,9 @@ front.core.register("form[front]", (el) => {
     });
 });
 
-front.core.register('[href]:not([href=""])', (el) => {
+energize.core.register('[href]:not([href=""])', (el) => {
     if (el.href == window.location.href)
-        el.classList.add('front-active-link');
+        el.classList.add('energize-active-link');
     else
-        el.classList.remove('front-active-link')
+        el.classList.remove('energize-active-link')
 })

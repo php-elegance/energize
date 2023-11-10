@@ -2,17 +2,16 @@
 
 use Elegance\Server\Router;
 
-Router::globalMiddleware(['cros', 'front']);
+Router::status('=elegance.energize.controller.status:error');
+
+Router::globalMiddleware(['cros', 'energize']);
 
 Router::add([
     'favicon.ico' => '=elegance.server.controller.assets:favicon',
-    'assets...' => '=elegance.front.controller.assets:auto',
-    '' => '#Bem vindo ao ELEGANCE FRONT',
+    'assets...' => '=elegance.energize.controller.assets:auto',
+    '' => '#Bem vindo ao ⚡ENERGIZE⚡',
 ]);
 
 Router::prefix('#', '=elegance.server.controller.prefix:show');
 Router::prefix('>', '=elegance.server.controller.prefix:redirect');
 Router::prefix('>>', '=elegance.server.controller.prefix:redirectWithRequestParameters');
-
-Router::status(STS_REDIRECT, '=elegance.server.controller.status:redirect');
-Router::status('=elegance.server.controller.status:error');
