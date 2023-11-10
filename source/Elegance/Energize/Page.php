@@ -4,51 +4,45 @@ namespace Elegance\Energize;
 
 use Elegance\Core\Code;
 use Elegance\Server\Request;
-use Elegance\Server\Response;
 use Elegance\Server\View;
 use Elegance\Server\ViewRender\ViewRenderJs;
 use Exception;
 
-abstract class Front
+abstract class Page
 {
-    protected static array $head = [
-        'title' => 'Elegance',
+    protected static array $heads = [
+        'title' => '⚡ENERGIZE⚡',
         'favicon' => '/favicon.ico',
         'description' => '',
     ];
-    protected static array $aside = [];
 
-    protected static string $layoutView = 'default';
-    protected static string $layoutGroup = '';
+    protected static array $asides = [];
 
-    /** Define o layout que deve ser utilizado para encapsular a resposta */
-    static function layout($view)
+    protected static string $template = 'default';
+    protected static string $templateState = '';
+
+    /** Define o template que deve ser utilizado para encapsular a resposta */
+    static function template($template)
     {
-        self::$layoutView = $view;
+        self::$template = $template;
     }
 
-    /** Define um grupo para o layout */
-    static function layoutGroup(string $group = '')
+    /** Define o estado para o tempate */
+    static function templateState(string $state = '')
     {
-        self::$layoutGroup = $group;
+        self::$templateState = $state;
     }
 
-    /** Define um conteúdo aside para a página */
-    static function aside(string $content, string $name)
-    {
-        self::$aside[$name] = $content;
-    }
-
-    /** Define o titulo da página no navegador */
+    /** Define o titulo da página*/
     static function title(?string $title)
     {
         self::head('title', $title);
     }
 
-    /** Define o favicon da página no navegador */
-    static function favicon(?string $favicon)
+    /** Define o favicon da página */
+    static function favicon(?string $urlFavicon)
     {
-        self::head('favicon', $favicon);
+        self::head('favicon', $urlFavicon);
     }
 
     /** Define o valor da tag description */
@@ -60,114 +54,96 @@ abstract class Front
     /** Define um valor dinamico para o head */
     static function head($name, $value)
     {
-        self::$head[$name] = $value;
+        self::$heads[$name] = $value;
     }
 
-    /** Resolve um conteúdo encapsulando em uma resposta front */
-    static function solve($content)
+    /** Renderiza a resposta da página */
+    static function renderize($content): string|array
     {
         if (is_httpStatus($content))
             throw new Exception('', $content);
 
-        if (!is_stringable($content))
-            return $content;
+        if (Request::header('Energize-Request'))
+            return self::renderizeFragment($content);
 
-        if (Request::header('Front-Request')) {
-            Response::type('json');
-            Response::status(STS_OK);
-            Response::content([
-                'info' => [
-                    'elegance' => true,
-                    'status' => STS_OK,
-                    'error' => false,
-                ],
-                'data' => self::renderToArray($content),
-            ]);
-            Response::send();
-        }
-
-        $content = self::renderToHtml($content);
-
-        Response::type('html');
-        Response::status(STS_OK);
-        Response::content($content);
-        Response::send();
+        return self::renderizePage($content);
     }
 
-    /** Renderiza um conteúdo dentro de uma estrutua de resposta parcial */
-    protected static function renderToArray($content)
-    {
-        $hash = self::getLayoutHash();
-
-        $response = [
-            'head' => self::$head,
-            'hash' => $hash,
-            'content' => self::organizeHtml($content)
-        ];
-
-        if (Request::header('Front-Hash') != $hash)
-            $response['content'] = self::renderLayout($response['content']);
-
-        return $response;
-    }
-
-    /** Renderia um conteúdo dentro de uma estrutura de resposta completa */
-    protected static function renderToHtml($content)
+    /** Renderiza uma página completa */
+    static function renderizePage($content): string
     {
         $content = self::organizeHtml($content);
-
-        $content = self::renderLayout($content);
+        $content = self::renderTemplate($content);
         $content = self::renderPage($content);
-
         return $content;
     }
 
-    /** Renderiza o Layout da respsta */
-    protected static function renderLayout($content)
+    /** Renderiza um fragmento de página */
+    static function renderizeFragment($content): array
     {
-        $content = "<div id='front-content'>\n$content\n</div>";
+        $hash = self::getTemplateHash();
+
+        $content = self::organizeHtml($content);
+
+        if (Request::header('Energize-Hash') != $hash)
+            $content = self::renderTemplate($content);
+
+        return [
+            'head' => self::getHeads(),
+            'hash' => $hash,
+            'content' => $content
+        ];
+    }
+
+    /** Renderiza o template da respsta */
+    static function renderTemplate($content)
+    {
+        $content = "<div id='energize-content'>\n$content\n</div>";
 
         $aside = [];
-        foreach (self::$aside as $name => $asideContent)
+        foreach (self::$asides as $name => $asideContent)
             $aside[$name] = self::organizeHtml($asideContent);
 
-        $layout = self::$layoutView;
+        $template = self::$template;
 
-        $layout = View::render("front/layout/$layout.php", [
-            'head' => self::$head,
+        $template = View::render("template/page/$template", [
+            'head' => self::$heads,
             'aside' => $aside
         ]);
 
-        $layout = self::organizeHtml($layout);
+        $template = self::organizeHtml($template);
 
-        $layout = str_replace('[#content]', $content, $layout);
+        $template = str_replace('[#content]', $content, $template);
 
-        return $layout ?? $content;
+        return $template ?? $content;
     }
 
-    protected static function renderPage($content)
+    static function renderPage($content)
     {
-        $hash = self::getLayoutHash();
-        $content = "<div id='front-layout' data-hash='$hash'>\n$content\n</div>";
+        $hash = self::getTemplateHash();
+        $content = "<div id='energize-template' data-hash='$hash'>\n$content\n</div>";
 
-        $page = View::render("front/base.php", ['head' => self::$head]);
+        $page = View::render("template/page/base", ['head' => self::$heads]);
         $page = self::organizeHtml($page);
         $page = str_replace('[#content]', $content, $page);
 
         return $page;
     }
 
-    /** Retorna o hash do layout atual */
-    protected static function getLayoutHash(): string
+    static function getHeads(): array
     {
-        $key = prepare('[#]#[#][#]', [
-            self::$layoutView ?? Request::host(),
-            self::$layoutGroup,
-        ]);
-        return Code::on([$key, self::$aside]);
+        return self::$heads;
     }
 
-
+    /** Retorna o hash do template atual */
+    static function getTemplateHash(): string
+    {
+        return Code::on([
+            self::$template,
+            self::$templateState,
+            self::$asides
+        ]);
+    }
 
     /** Retorna uma string HTML organizando as tags style e script */
     static function organizeHtml(string $string): string
