@@ -80,6 +80,7 @@ Se o formulário não informar a forma de tratamento da resposta e tiver uma tag
 A resposta será inserida no seguingue padrão
 
     <span class='${spanClass}'>
-        ${resp.info.message}
+        <span>${resp.info.message}</span>
+        <span>${resp.info.description}</span>
     </span>
  

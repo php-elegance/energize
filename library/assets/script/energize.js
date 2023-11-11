@@ -232,7 +232,12 @@ energize.core.register("form:not([energized])", (el) => {
                 if (showmessage) {
                     let spanClass = `sts_` + (resp.info.error ? "erro" : "success");
                     let message = resp.info.message ?? (resp.info.error ? "erro" : "ok");
-                    showmessage.innerHTML = `<span class='${spanClass}'>${message}</span>`;
+                    let description = resp.info.description ?? '';
+
+                    if (description)
+                        description = `<span>${description}</span>`;
+
+                    showmessage.innerHTML = `<span class='${spanClass}'><span>${message}</span>${description}</span>`;
                 }
             }).catch(() => null)
     });
