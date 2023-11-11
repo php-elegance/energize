@@ -33,6 +33,12 @@ abstract class Page
         self::$layoutState = $state;
     }
 
+    /** Define um conteúdo aside para a página */
+    static function aside(string $content, string $name)
+    {
+        self::$asides[$name] = $content;
+    }
+
     /** Define o titulo da página*/
     static function title(?string $title)
     {
