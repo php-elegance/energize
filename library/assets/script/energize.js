@@ -198,11 +198,14 @@ energize.core.register("form:not([energized])", (el) => {
             }
         });
 
+        let url = el.action;
+        let hash = document.getElementById('energize-layout').dataset.hash;
+
         energize.request(
-            el.action,
+            url,
             el.getAttribute("method") ?? "post",
             data,
-            { 'Energize-Hash': document.getElementById('energize-layout').dataset.hash })
+            { 'Energize-Hash': hash })
             .then((resp) => {
                 if (resp.info.error && el.dataset.error)
                     return eval(el.dataset.error)(resp)
@@ -242,6 +245,7 @@ energize.core.register("form:not([energized])", (el) => {
             }).catch(() => null)
     });
 });
+
 
 energize.core.register("div[data-fragment]:not([energized])", (el) => {
     energize.fragment(
