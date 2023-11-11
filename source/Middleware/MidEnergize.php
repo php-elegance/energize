@@ -15,12 +15,11 @@ class MidEnergize extends MidJson
     {
         try {
             $content = $next();
-            $content = Page::renderize($content);
 
-            if (is_array($content))
+            if (is_array($content) || is_json($content))
                 parent::encaps($content);
             else
-                Response::content($content);
+                Response::content(Page::renderize($content));
 
             Response::send();
         } catch (Error | Exception $e) {
