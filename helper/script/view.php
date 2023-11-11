@@ -2,7 +2,7 @@
 
 use Elegance\Server\View;
 use Elegance\Server\ViewRender\ViewRenderCss;
-use Elegance\ViewRender\ViewRenderVue;
+use Elegance\Energize\ViewRender\ViewRenderVue;
 
 View::suportedSet('scss', '_style.scss', ViewRenderCss::class);
 
