@@ -18,19 +18,19 @@ abstract class Page
 
     protected static array $asides = [];
 
-    protected static string $template = 'default';
-    protected static string $templateState = '';
+    protected static string $layout = 'default';
+    protected static string $layoutState = '';
 
-    /** Define o template que deve ser utilizado para encapsular a resposta */
-    static function template($template)
+    /** Define o layout que deve ser utilizado para encapsular a resposta */
+    static function layout($layout)
     {
-        self::$template = $template;
+        self::$layout = $layout;
     }
 
     /** Define o estado para o tempate */
-    static function templateState(string $state = '')
+    static function layoutState(string $state = '')
     {
-        self::$templateState = $state;
+        self::$layoutState = $state;
     }
 
     /** Define o titulo da página*/
@@ -73,7 +73,7 @@ abstract class Page
     static function renderizePage($content): string
     {
         $content = self::organizeHtml($content);
-        $content = self::renderTemplate($content);
+        $content = self::renderLayout($content);
         $content = self::renderPage($content);
         return $content;
     }
@@ -81,12 +81,12 @@ abstract class Page
     /** Renderiza um fragmento de página */
     static function renderizeFragment($content): array
     {
-        $hash = self::getTemplateHash();
+        $hash = self::getLayoutHash();
 
         $content = self::organizeHtml($content);
 
         if (!IS_FRAGMENT && Request::header('Energize-Hash') != $hash)
-            $content = self::renderTemplate($content);
+            $content = self::renderLayout($content);
 
         return [
             'head' => self::getHeads(),
@@ -95,8 +95,8 @@ abstract class Page
         ];
     }
 
-    /** Renderiza o template da respsta */
-    static function renderTemplate($content)
+    /** Renderiza o layout da respsta */
+    static function renderLayout($content)
     {
         $content = "<div id='energize-content'>\n$content\n</div>";
 
@@ -104,26 +104,26 @@ abstract class Page
         foreach (self::$asides as $name => $asideContent)
             $aside[$name] = self::organizeHtml($asideContent);
 
-        $template = self::$template;
+        $layout = self::$layout;
 
-        $template = View::render("template/page/$template", [
+        $layout = View::render("layout/page/$layout", [
             'head' => self::$heads,
             'aside' => $aside
         ]);
 
-        $template = self::organizeHtml($template);
+        $layout = self::organizeHtml($layout);
 
-        $template = str_replace('[#content]', $content, $template);
+        $layout = str_replace('[#content]', $content, $layout);
 
-        return $template ?? $content;
+        return $layout ?? $content;
     }
 
     static function renderPage($content)
     {
-        $hash = self::getTemplateHash();
-        $content = "<div id='energize-template' data-hash='$hash'>\n$content\n</div>";
+        $hash = self::getLayoutHash();
+        $content = "<div id='energize-layout' data-hash='$hash'>\n$content\n</div>";
 
-        $page = View::render("template/page/base", ['head' => self::$heads]);
+        $page = View::render("layout/page/base", ['head' => self::$heads]);
         $page = self::organizeHtml($page);
         $page = str_replace('[#content]', $content, $page);
 
@@ -135,12 +135,12 @@ abstract class Page
         return self::$heads;
     }
 
-    /** Retorna o hash do template atual */
-    static function getTemplateHash(): string
+    /** Retorna o hash do layout atual */
+    static function getLayoutHash(): string
     {
         return Code::on([
-            self::$template,
-            self::$templateState,
+            self::$layout,
+            self::$layoutState,
             self::$asides
         ]);
     }

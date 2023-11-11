@@ -9,6 +9,7 @@
 /source/routes/*
 /view/*
 
+!/view/layout
 !/view/template
 
 /routes.json

@@ -37,8 +37,8 @@ const energize = {
                 el.innerHTML = content;
                 energize.core.run();
             },
-            template: (content, hash) => {
-                let el = document.getElementById('energize-template')
+            layout: (content, hash) => {
+                let el = document.getElementById('energize-layout')
                 el.innerHTML = content;
                 el.dataset.hash = hash;
                 energize.core.run();
@@ -134,7 +134,7 @@ const energize = {
         if ((new URL(url)).hostname != energize.core.BASE_HOST)
             return energize.redirect(url);
 
-        let hash = document.getElementById('energize-template').dataset.hash;
+        let hash = document.getElementById('energize-layout').dataset.hash;
 
         energize.request(url, 'get', {}, { 'Energize-Hash': hash })
             .then((resp) => {
@@ -151,7 +151,7 @@ const energize = {
                 if (resp.data.hash == hash)
                     energize.core.update.content(resp.data.content)
                 else
-                    energize.core.update.template(resp.data.content, resp.data.hash)
+                    energize.core.update.layout(resp.data.content, resp.data.hash)
 
                 window.scrollTo(0, 0);
                 return;
@@ -202,7 +202,7 @@ energize.core.register("form:not([energized])", (el) => {
             el.action,
             el.getAttribute("method") ?? "post",
             data,
-            { 'Energize-Hash': document.getElementById('energize-template').dataset.hash })
+            { 'Energize-Hash': document.getElementById('energize-layout').dataset.hash })
             .then((resp) => {
                 if (resp.info.error && el.dataset.error)
                     return eval(el.dataset.error)(resp)
@@ -218,7 +218,7 @@ energize.core.register("form:not([energized])", (el) => {
                     if (resp.data.hash == hash)
                         energize.core.update.content(resp.data.content)
                     else
-                        energize.core.update.template(resp.data.content, resp.data.hash)
+                        energize.core.update.layout(resp.data.content, resp.data.hash)
 
                     window.scrollTo(0, 0);
                     return;

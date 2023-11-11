@@ -30,21 +30,21 @@ Você pode alterar os dados da página sem precisar alerar o arquivo base.html. 
 
     [#head.name]
 
-### Alterar templates
+### Alterar layouts
 
-Você deve criar o template na pasta **view/template**. Um template é uma view que será utilizada para encapsular o conteúdo
-Para alterar o template de uma resposta, utilize o metodod **Front::template('templateName')**
+Você deve criar o layout na pasta **view/layout**. Um layout é uma view que será utilizada para encapsular o conteúdo
+Para alterar o layout de uma resposta, utilize o metodod **Front::layout('layoutName')**
 
-    Front::template('default');
+    Front::layout('default');
 
-### Estado de template
+### Estado de layout
 
-Por padrão, templates são estaticos e, a não ser que o arquivo mude, se mantem inalterados durante a navegação.
-Você pode desativar este comportamento com o metodo metodod **Front::teplateState('groupName')**
+Por padrão, layouts são estaticos e, a não ser que o arquivo mude, se mantem inalterados durante a navegação.
+Você pode desativar este comportamento com o metodo metodod **Front::layoutState('groupName')**
 
-    Front::teplateState('state');
+    Front::layoutState('state');
 
-Uma requisições que utilizam estados diferentes sempre terão o template atualizado.
+Uma requisições que utilizam estados diferentes sempre terão o layout atualizado.
 
 ### Conteúdo Aside
 
@@ -60,6 +60,6 @@ Sempre que uma resposta passar pela middleware **energize** ela será tratada co
 
   - Sempre que uma página for acessada diretamente ela via ser entregue em HTML
   - Sempre que uma página for chamada dinamicamente, ela vai retornar um JSON com o conteúdo
-  - Sempre que uma página utiliar um template diferente do template atual, ela vai retornar um JSON com o template e o conteúdo
+  - Sempre que uma página utiliar um layout diferente do layout atual, ela vai retornar um JSON com o layout e o conteúdo
 
  > Essa implementação não precisa ser feita. tudo já está aplicado e instalado no arquivo front.js
