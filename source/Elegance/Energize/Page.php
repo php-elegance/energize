@@ -89,6 +89,9 @@ abstract class Page
     {
         $hash = self::getLayoutHash();
 
+        if (is_array($content))
+            return $content;
+
         $content = self::organizeHtml($content);
 
         if (!IS_FRAGMENT && Request::header('Energize-Hash') != $hash)
