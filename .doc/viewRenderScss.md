@@ -18,3 +18,11 @@ A classe [front](https://github.com/php-elegance/energize/blob/main/.doc/front.m
 Se precisar compilar texto SCSS em CSS, utilize a classe **Scss**
 
     Scss::compile($style): string
+
+### Arquivo global SCSS
+
+Para que o compilador utilize um arquivo global no SCSS, utilize o metodo **useInCompile**
+
+    Scss::useInCompile('view',[prepare]);
+
+Este arquivo vai ser importado antes da compilação do SCSS
