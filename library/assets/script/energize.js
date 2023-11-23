@@ -63,22 +63,24 @@ const energize = {
             },
         },
         load: {
-            script(src, call) {
-                call = call ?? function () { };
+            script(src) {
+                return new Promise(function (resolve, reject) {
+                    if (document.head.querySelectorAll(`script[src = "${src}"]`).length > 0)
+                        resolve();
 
-                if (document.head.querySelectorAll(`script[src = "${src}"]`).length > 0)
-                    return call();
-
-                let script = document.createElement("script");
-                script.async = "true";
-                script.src = src;
-                script.onload = () => call();
-                document.head.appendChild(script);
+                    let script = document.createElement("script");
+                    script.async = "true";
+                    script.src = src;
+                    script.onload = () => resolve();
+                    document.head.appendChild(script);
+                })
             },
             vue(component, inId) {
-                energize.core.load.script(energize.core.URL_VUE_JS, () => Vue.createApp(component).mount(inId));
+                energize.core.load.script(energize.core.URL_VUE_JS)
+                    .then(() => Vue.createApp(component).mount(inId))
+                    .catch(() => null);
             },
-        }
+        },
     },
     request(url = null, method = 'get', data = {}, header = {}) {
         return new Promise(function (resolve, reject) {
@@ -163,9 +165,7 @@ const energize = {
     },
     fragment(url, target, mode) {
         energize.request(url, 'get', {}, { 'Energize-Fragment': true })
-            .then((resp) => {
-                energize.core.update.fragment(target, resp.data.content, mode)
-            })
+            .then((resp) => energize.core.update.fragment(target, resp.data.content, mode))
             .catch(() => null)
     }
 };
@@ -245,7 +245,6 @@ energize.core.register("form:not([energized])", (el) => {
             }).catch(() => null)
     });
 });
-
 
 energize.core.register("div[data-fragment]:not([energized])", (el) => {
     energize.fragment(
