@@ -19,7 +19,7 @@
         ]
     },
     "require": {
-        "elegance/server": "^2.0",
+        "elegance/server": "^2.1",
         "scssphp/scssphp": "^1.11"
     }
 }
